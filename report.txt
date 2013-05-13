@@ -1,0 +1,20 @@
+==================================
+REPORT
+==================================
+by: Cedric McDougal
+
+My solution is pretty straightforward. I use First Order Logic to ask yes or no questions about the possible contents of a square. I use Python to figure out what to ask, where to look, and how to travel.
+
+I created a separate module that provides an abstraction over Prover9, so it could realistically be swapped out with other theorem provers. This module reads in a file called `template.p9` that contains the rules about the Wumpus world. When the agent asks a question about the world, the prover module formats the template to represent that question, writes it to a file, and passes that file in to a subprocess that calls Prover9. The result is either yes, the theorem was proved, or no, it was not. The rules allow for questions such as "is there definitely a Wumpus in this square," "is there maybe a Wumpus in this square," and "is there definitely not a Wumpus in this square?"
+
+The agent handles the actualy decision making. Every time the agent discovers a new square, it inspects it and adds rules accordingly. The agent decides where to move next by looking for unvisited squares that are guaranteed to be safe. This guarantee is provided by a combination of the prover module and some cached information in Python. The agent continually travels to these unvisited, safe squares until it has either collected all the gold or cannot find another unvisited, safe square. At this point, the agent heads towards the goal square and exits the world.
+
+The agent uses a simple breadth-first search algorithm to plot paths to desired squares. It keeps track of each possible path and circles outwards until it finds its destination square, at which point it follows the first path it found.
+
+There is a world module that keeps track of the world state. It also handles the display of the world and the ending of the game.
+
+The run module simply takes in command line options and continually asks the agent for its next move until the game is over.
+
+I created a custom display module to handle the printing of the Wumpus world and the agent's actions. It captures stdout and intercepts print statements within the agent and the world, then displays these statements to the right of the Wumpus world display.
+
+I used one third party module called Getch for blocking the program until a key is pressed. The website from which I got that module is stated in the getch.py file.

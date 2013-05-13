@@ -1,0 +1,109 @@
+
+assign(max_seconds, 60).
+set(production).
+
+% -------------------------
+formulas(usable).
+
+%
+% WUMPUS
+%
+
+chk_wumpus(u,v) -> want_stench_right(u+1,v).
+chk_wumpus(u,v) -> want_stench_left(u+-1,v).
+chk_wumpus(u,v) -> want_stench_up(u,v+1).
+chk_wumpus(u,v) -> want_stench_down(u,v+-1).
+chk_wumpus(u,v) -> dont_want_stench_right(u+1,v).
+chk_wumpus(u,v) -> dont_want_stench_left(u+-1,v).
+chk_wumpus(u,v) -> dont_want_stench_up(u,v+1).
+chk_wumpus(u,v) -> dont_want_stench_down(u,v+-1).
+chk_wumpus(u,v) -> dont_want_stench_up_left(u+-1,v+1).
+chk_wumpus(u,v) -> dont_want_stench_up_right(u+1,v+1).
+chk_wumpus(u,v) -> dont_want_stench_down_left(u+-1,v+-1).
+chk_wumpus(u,v) -> dont_want_stench_down_right(u+1,v+-1).
+
+stench(x,y) & want_stench_right(x,y) -> stench_right.
+stench(x,y) & want_stench_left(x,y) -> stench_left.
+stench(x,y) & want_stench_up(x,y) -> stench_up.
+stench(x,y) & want_stench_down(x,y) -> stench_down.
+-stench(x,y) & dont_want_stench_right(x,y) -> no_stench_right.
+-stench(x,y) & dont_want_stench_left(x,y) -> no_stench_left.
+-stench(x,y) & dont_want_stench_up(x,y) -> no_stench_up.
+-stench(x,y) & dont_want_stench_down(x,y) -> no_stench_down.
+-stench(x,y) & dont_want_stench_up_left(x,y) -> no_stench_up_left.
+-stench(x,y) & dont_want_stench_up_right(x,y) -> no_stench_up_right.
+-stench(x,y) & dont_want_stench_down_left(x,y) -> no_stench_down_left.
+-stench(x,y) & dont_want_stench_down_right(x,y) -> no_stench_down_right.
+
+chk_wumpus(u,v)
+& ((stench_right & stench_left)
+   | (stench_up & stench_down)
+   | (no_stench_up_left & stench_up & stench_left)
+   | (no_stench_up_right & stench_up & stench_right)
+   | (no_stench_down_left & stench_down & stench_left)
+   | (no_stench_down_right & stench_down & stench_right))
+-> wumpus(u,v).
+
+chk_wumpus(u,v)
+& (stench_right | stench_left | stench_up | stench_down)
+-> maybe_wumpus(u,v).
+
+chk_wumpus(u,v)
+& (no_stench_right | no_stench_left | no_stench_up | no_stench_down)
+-> no_wumpus(u,v).
+
+%
+% PITS
+%
+
+chk_pit(u,v) -> want_breeze_right(u+1,v).
+chk_pit(u,v) -> want_breeze_left(u+-1,v).
+chk_pit(u,v) -> want_breeze_up(u,v+1).
+chk_pit(u,v) -> want_breeze_down(u,v+-1).
+chk_pit(u,v) -> dont_want_breeze_right(u+1,v).
+chk_pit(u,v) -> dont_want_breeze_left(u+-1,v).
+chk_pit(u,v) -> dont_want_breeze_up(u,v+1).
+chk_pit(u,v) -> dont_want_breeze_down(u,v+-1).
+chk_pit(u,v) -> dont_want_breeze_up_left(u+-1,v+1).
+chk_pit(u,v) -> dont_want_breeze_up_right(u+1,v+1).
+chk_pit(u,v) -> dont_want_breeze_down_left(u+-1,v+-1).
+chk_pit(u,v) -> dont_want_breeze_down_right(u+1,v+-1).
+
+breeze(x,y) & want_breeze_right(x,y) -> breeze_right.
+breeze(x,y) & want_breeze_left(x,y) -> breeze_left.
+breeze(x,y) & want_breeze_up(x,y) -> breeze_up.
+breeze(x,y) & want_breeze_down(x,y) -> breeze_down.
+-breeze(x,y) & dont_want_breeze_right(x,y) -> no_breeze_right.
+-breeze(x,y) & dont_want_breeze_left(x,y) -> no_breeze_left.
+-breeze(x,y) & dont_want_breeze_up(x,y) -> no_breeze_up.
+-breeze(x,y) & dont_want_breeze_down(x,y) -> no_breeze_down.
+-breeze(x,y) & dont_want_breeze_up_left(x,y) -> no_breeze_up_left.
+-breeze(x,y) & dont_want_breeze_up_right(x,y) -> no_breeze_up_right.
+-breeze(x,y) & dont_want_breeze_down_left(x,y) -> no_breeze_down_left.
+-breeze(x,y) & dont_want_breeze_down_right(x,y) -> no_breeze_down_right.
+
+chk_pit(u,v)
+& ((breeze_right & breeze_left & breeze_up & breeze_down)
+   | (no_breeze_up_left & breeze_up & breeze_left)
+   | (no_breeze_up_right & breeze_up & breeze_right)
+   | (no_breeze_down_left & breeze_down & breeze_left)
+   | (no_breeze_down_right & breeze_down & breeze_right))
+-> pit(u,v).
+
+chk_pit(u,v)
+& (breeze_right | breeze_left | breeze_up | breeze_down)
+-> maybe_pit(u,v).
+
+chk_pit(u,v)
+& (no_breeze_right | no_breeze_left | no_breeze_up | no_breeze_down)
+-> no_pit(u,v).
+
+end_of_list.
+
+% -------------------------
+formulas(sos).
+end_of_list.
+
+% -------------------------
+formulas(goals).
+end_of_list.
